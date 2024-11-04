@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách sinh viên</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        body, html {
+            height: 100%;
+        }
+        .full-height {
+            height: 100%;
+        }
+        .full-width {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="full-height">
+<div class="container-fluid full-width">
+    <div th:replace="~{head}"></div>
+
+    <div class="row mt-4 mb-3">
+        <div class="col-md-3">
+            <h3>Khóa K44</h3>
+            <ul class="list-group">
+                <li class="list-group-item">Lớp 44A</a></li>
+                <li class="list-group-item">Lớp 44B</a></li>
+                <!-- Thêm các lớp khác tại đây 
+                <li class="list-group-item"><a th:href="@{/students/class?batch=K44&class=44A}">Lớp 44A</a></li>
+                <li class="list-group-item"><a th:href="@{/students/class?batch=K44&class=44B}">Lớp 44B</a></li> -->
+            </ul>
+        </div>
+        <div class="col-md-9">
+            <h1>Danh sách sinh viên</h1>
+
+            <!-- Success message -->
+            <div id="successMessage" th:if="${successMessage}" class="alert alert-success" role="alert">
+                <span th:text="${successMessage}"></span>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-lg-3">
+                    <a th:href="@{/students/new}" class="btn btn-primary btn-sm">Thêm sinh viên</a>
+                </div>
+                <div class="col-lg-9">
+                    <form id="searchForm" class="form-inline float-right">
+                        <input type="text" class="form-control mr-sm-2" placeholder="Tìm kiếm..." name="keyword" id="keyword">
+                        <button class="btn btn-outline-secondary" type="submit">Tìm kiếm</button>
+                    </form>
+                </div>
+            </div>
+
+            <table class="table table-striped table-bordered" action="/upload">
+            <thead class="table-dark">
+                <tr>
+                    <th>Image</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="studentTableBody">
+                <tr th:each="student : ${studentPage.content}">
+                     <td>
+                        <!-- Hiển thị URL của ảnh để kiểm tra -->
+                      <!--   <a th:href="@{${student.imageUrl}}" target="_blank" th:text="${student.imageUrl}"></a> -->
+                        <!-- Hiển thị ảnh -->
+                        <img th:if="${student.imageUrl}" th:src="@{${student.imageUrl}}" alt="Student Image" class="img-thumbnail" style="width: 50px;">
+                    </td>
+                    <td th:text="${student.firstName}"></td>
+                    <td th:text="${student.lastName}"></td>
+                    <td th:text="${student.email}"></td>
+                    <td>
+                        <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-primary">Update</a>
+                        <a th:href="@{/students/{id}(id=${student.id})}" class="btn btn-danger"
+                           th:onclick="'return confirm(\'Are you sure you want to delete this student?\');'">Delete</a>
+        <!--                                <a th:href="@{/students/register/{id}(id=${student.id})}" class="btn btn-success">Register Subject</a>
+         -->             
+                            <a th:href="@{'/students/' + ${student.id} + '/registrations'}" class="btn btn-primary">View </a>
+                            <!-- Other action buttons can be added here -->
+                          
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="container">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${studentPage.hasPrevious() ? '' : 'disabled'}">
+                <a class="page-link" th:href="@{/students(page=${studentPage.number - 1}, size=${studentPage.size})}">Previous</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, studentPage.totalPages - 1)}"
+                th:classappend="${i == studentPage.number ? 'active' : ''}">
+                <a class="page-link" th:href="@{/students(page=${i}, size=${studentPage.size})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${studentPage.hasNext() ? '' : 'disabled'}">
+                <a class="page-link" th:href="@{/students(page=${studentPage.number + 1}, size=${studentPage.size})}">Next</a>
+            </li>
+        </ul>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    let currentPage = 0;
+    let pageSize = 5;
+
+    $('#keyword').on('input', function () {
+        let keyword = $(this).val().trim();
+
+        if (keyword === "") {
+            fetchStudents(currentPage, pageSize);
+        } else {
+            searchStudents(keyword);
+        }
+    });
+
+    $('#prevPage').on('click', function (event) {
+        event.preventDefault();
+        if (currentPage > 0) {
+            currentPage--;
+            fetchStudents(currentPage, pageSize);
+        }
+    });
+
+    $('#nextPage').on('click', function (event) {
+        event.preventDefault();
+        currentPage++;
+        fetchStudents(currentPage, pageSize);
+    });
+
+    function searchStudents(keyword) {
+        $.ajax({
+            url: '/api/search',
+            type: 'GET',
+            data: { keyword: keyword },
+            success: function (response) {
+                let tbody = $('#studentTableBody');
+                tbody.empty();
+                if (response.length > 0) {
+                    $.each(response, function (index, student) {
+                        tbody.append('<tr>'
+                            + '<td><img src="' + student.imageUrl + '" alt="Student Image" width="100"></td>'
+                            + '<td>' + student.firstName + '</td>'
+                            + '<td>' + student.lastName + '</td>'
+                            + '<td>' + student.email + '</td>'
+                            + '<td>'
+                            + '<a href="/students/edit/' + student.id + '" class="btn btn-primary">Update</a> '
+                            + '<a href="/students/' + student.id + '" class="btn btn-danger">Delete</a>'
+                            + '<a href="/students/' + student.id + + "/registrations" + '" class="btn btn-danger">View</a>'
+                            + '</td>'
+                            + '</tr>');
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="5" class="text-center">No students found</td></tr>');
+                }
+                $('#prevPageLi').addClass('disabled');
+                $('#nextPageLi').addClass('disabled');
+            },
+            error: function (error) {
+                console.log("Error:", error);
+                alert("Error occurred while searching for students. Please try again.");
+            }
+        });
+    }
+
+    function fetchStudents(page, size) {
+        $.ajax({
+            url: '/api/students',
+            type: 'GET',
+            data: { page: page, size: size },
+            success: function (response) {
+                let tbody = $('#studentTableBody');
+                tbody.empty();
+                $.each(response.content, function (index, student) {
+                    tbody.append('<tr>'
+                        + '<td><img src="' + student.imageUrl + '" alt="Student Image" width="100"></td>'
+                        + '<td>' + student.firstName + '</td>'
+                        + '<td>' + student.lastName + '</td>'
+                        + '<td>' + student.email + '</td>'
+                        + '<td>'
+                        + '<a href="/students/edit/' + student.id + '" class="btn btn-primary">Update</a> '
+                        + '<a href="/students/' + student.id + '" class="btn btn-danger">Delete</a>'
+                        + '</td>'
+                        + '</tr>');
+                });
+                $('#pageNum').text(page + 1);
+                $('#prevPageLi').toggleClass('disabled', !response.hasPrevious);
+                $('#nextPageLi').toggleClass('disabled', !response.hasNext);
+            },
+            error: function (error) {
+                console.log("Error:", error);
+                
+            }
+        });
+    }
+
+    // Initially fetch the first page with 5 students
+    fetchStudents(currentPage, pageSize);
+});
+
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var successMessage = document.getElementById('successMessage');
+        if (successMessage) {
+            setTimeout(function () {
+                successMessage.style.opacity = '0';
+                setTimeout(function () {
+                    successMessage.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+    });
+</script>
+</body>
+</html>

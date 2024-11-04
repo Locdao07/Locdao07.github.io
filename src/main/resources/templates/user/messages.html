@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Tin nhắn</title>
+    <!-- Include necessary CSS and JS files -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding-top: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .tab {
+            overflow: hidden;
+            background-color: #35424a;
+            border-bottom: 1px solid #ccc;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            margin-top: -10px;
+        }
+        .tab button {
+            background-color: #35424a;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        .tab button:hover {
+            background-color: #e8491d;
+        }
+        .tab button.active {
+            background-color: #e8491d;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border-top: 1px solid #ccc;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .message-form {
+            margin-top: 20px;
+        }
+        .message-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .message-form input[type="text"], .message-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .message-form button {
+            background-color: #35424a;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .message-form button:hover {
+            background-color: #e8491d;
+        }
+        .delete-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .delete-button:hover {
+            background-color: darkred;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{user/_head}"></div>
+    <header>
+        <h1>Tin nhắn</h1>
+    </header>
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'compose')">Soạn tin nhắn mới</button>
+            <button class="tablinks" onclick="openTab(event, 'all')">Tất cả tin nhắn</button>
+            <button class="tablinks" onclick="openTab(event, 'received')">Tin nhắn đến</button>  <!-- [<span th:text="${unreadMessagesCount}">0</span>] -->
+            <button class="tablinks" onclick="openTab(event, 'sent')">Tin nhắn đã gửi</button>
+            <button class="tablinks" onclick="openTab(event, 'deleted')">Tin nhắn đã xóa</button>
+        </div>
+
+        <!-- Compose Message Form -->
+        <div id="compose" class="tabcontent">
+            <h3>Soạn tin nhắn mới</h3>
+            
+            <form class="message-form" th:action="@{/userInfo/messages/send}" method="post" th:object="${newMessage}">
+        <label for="receiverEmail">Người nhận:</label>
+        <input type="text" id="receiverEmail" th:field="*{receiverEmail}" required>
+        <label for="content">Nội dung:</label>
+        <textarea id="content" th:field="*{content}" required></textarea>
+        <button type="submit">Gửi</button>
+    </form>
+        </div>
+
+        <!-- Content -->
+      <div id="all" class="tabcontent">
+    <h2>Tất cả tin nhắn</h2>
+    <table>
+        <thead>
+            
+        </thead>
+        <tbody>
+            <tr th:each="message : ${messages}">
+             <td>
+                    <a th:href="@{/userInfo/detail/{id}(id=${message.id})}" th:text="${message.shortContent}"></a>
+                </td>
+                <td th:text="${message.receiverNamesFormatted}"></td>
+                <td th:text="${message.timestamp}"></td>
+                <td>
+                    <form th:action="@{/userInfo/messages/delete/{id}(id=${message.id})}" method="post">
+                        <button type="submit" class="delete-button">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+      
+       
+
+        <div id="received" class="tabcontent">
+            <h2>Tin nhắn đến</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Người gửi</th>
+                        <th>Nội dung</th>
+                        <th>Thời gian</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="message : ${receivedMessages}">
+                        <td th:text="${message.senderName}"></td>
+                         <td>
+                <a th:href="@{/userInfo/detail/{id}(id=${message.id})}" th:text="${message.shortContent}"></a>
+            </td>
+                        <td th:text="${message.timestamp}"></td>
+                        <td>
+                            <form th:action="@{/userInfo/messages/delete/{id}(id=${message.id})}" method="post">
+                                <button type="submit" class="delete-button">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+      <div id="sent" class="tabcontent">
+    <h2>Tin nhắn đã gửi</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nội dung</th>
+                <th>Người nhận</th>
+                <th>Thời gian</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="message : ${sentMessages}">
+  <td>
+                            <a th:href="@{/userInfo/detail/{id}(id=${message.id})}" th:text="${message.shortContent}"></a>
+                        </td>
+                <td>
+                    <span th:text="${message.receiverNamesFormatted}"></span>
+                </td>
+                <td th:text="${message.timestamp}"></td>
+                <td>
+                    <form th:action="@{/userInfo/messages/delete/{id}(id=${message.id})}" method="post">
+                        <button type="submit" class="delete-button">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+      
+
+        <div id="deleted" class="tabcontent">
+            <h2>Tin nhắn đã xóa</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Người gửi</th>
+                        <th>Nội dung</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="message : ${deletedMessages}">
+                        <td th:text="${message.senderName}"></td>
+                        <td th:text="${message.content}"></td>
+                        <td th:text="${message.timestamp}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:src="@{/js/messages.js}"></script>
+    <script>
+        function openTab(evt, tabName) {
+            // Get all elements with class="tabcontent" and hide them
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+
+            // Store the currently active tab in localStorage
+            localStorage.setItem('activeTab', tabName);
+        }
+
+        // Function to load the last active tab from localStorage
+        function loadLastActiveTab() {
+            var activeTab = localStorage.getItem('activeTab');
+            if (activeTab) {
+                document.getElementById(activeTab).style.display = "block";
+                var tablinks = document.getElementsByClassName("tablinks");
+                for (var i = 0; i < tablinks.length; i++) {
+                    if (tablinks[i].innerText.toLowerCase().includes(activeTab)) {
+                        tablinks[i].className += " active";
+                    }
+                }
+            } else {
+                // Open the first tab by default if no active tab is stored
+                document.getElementsByClassName("tablinks")[0].click();
+            }
+        }
+
+        // Load the last active tab when the page is loaded
+        document.addEventListener("DOMContentLoaded", loadLastActiveTab);
+    </script>
+</body>
+</html>

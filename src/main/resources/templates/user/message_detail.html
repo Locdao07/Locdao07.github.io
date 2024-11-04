@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <title>Chi tiết tin nhắn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding-top: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .message-details {
+            margin-top: 20px;
+        }
+        .message-details h2 {
+            font-size: 20px;
+            color: #35424a;
+        }
+        .message-details p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{user/_head}"></div>
+    <header>
+        <h1>Chi tiết tin nhắn</h1>
+    </header>
+    <div class="container">
+        <div class="message-details">
+            <h2>Tin nhắn từ <span th:text="${message.senderName}"></span> đến <span th:text="${message.receiverNamesFormatted}"></span></h2>
+            <p><strong>Thời gian:</strong> <span th:text="${message.timestamp}"></span></p>
+            <p><strong>Nội dung:</strong></p>
+            <p th:text="${message.content}"></p>
+            <a th:href="@{/userInfo/messages}" class="btn btn-primary">Quay lại</a>
+        </div>
+    </div>
+</body>
+</html>

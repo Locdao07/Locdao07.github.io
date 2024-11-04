@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đăng Ký Môn Học</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        select, input[type="submit"], .btn-back {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        select {
+            background-color: #f9f9f9;
+        }
+        input[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .btn-back {
+            display: block;
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            line-height: 40px;
+        }
+        .btn-back:hover {
+            background-color: #0069d9;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Đăng ký môn học</h1>
+    <form th:action="@{/registrations}" th:object="${registration}" method="post">
+        <div class="form-group">
+            <label for="studentId">Student:</label>
+            <select id="studentId" name="studentId" th:field="*{studentId}">
+                <option value="">-- Chọn Sinh Viên --</option>
+                <option th:each="student : ${students}" th:value="${student.id}" th:text="${student.firstName} + ' ' + ${student.lastName}" ></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="subjectId">Subject:</label>
+            <select id="subjectId" name="subjectId" th:field="*{subjectId}">
+                <option value="">-- Chọn Môn Học --</option>
+                <option th:each="subject : ${subjects}" th:value="${subject.id}" th:text="${subject.subjectName}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Register">
+        </div>
+        <div class="form-group">
+            <a th:href="@{/registrations}" class="btn-back">Back to Home</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

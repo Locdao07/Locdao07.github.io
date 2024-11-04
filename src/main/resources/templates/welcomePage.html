@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}">Message Page</title>
+</head>
+<body>
+<!-- Include _menu.html -->
+<div th:replace="~{_menu}"></div>
+
+<h2>Message: <span th:text="${message}"></span></h2>
+
+</body>
+</html>

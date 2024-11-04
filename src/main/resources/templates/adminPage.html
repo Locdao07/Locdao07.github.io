@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}">Admin Page</title>
+</head>
+<body>
+<!-- Include _menu.html -->
+<div th:replace="~{_menu}"></div>
+
+<h2>Admin Page</h2>
+<h3>Welcome:
+    <span th:text="${#authentication.name}"></span>
+</h3>
+<b>This is a protected page!</b>
+
+<br/><br/>
+
+<div th:if="${userInfo != null}" th:text="${userInfo}"></div>
+
+</body>
+
+
+</html>

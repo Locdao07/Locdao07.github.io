@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registered Subjects</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        /* Styles here */
+    </style>
+</head>
+<body>
+<div th:replace="~{user/_head}"></div>
+<div class="container">
+    <h1>Danh sách</h1>
+    <!-- <a th:href="@{/userInfo/subject-list}" class="back-btn">Back to</a> -->
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Subject Name</th>
+                <th>Registration Date</th>
+                <th>Fee</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="registration : ${registrations}">
+                <td th:text="${registration.id}"></td>
+                <td th:text="${registration.subject.subjectName}"></td>
+                <td th:text="${#dates.format(registration.registrationDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:text="${registration.subject.fee}" class="fee">Fee</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="total-fee">
+        Tổng Tiền: <span id="totalFee"></span>
+    </div>
+</div>
+
+<script>
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let totalFee = 0;
+        document.querySelectorAll('.fee').forEach(function (feeElement) {
+            let fee = parseFloat(feeElement.textContent);
+            if (!isNaN(fee)) {
+                totalFee += fee;
+                feeElement.textContent = formatNumber(fee);
+            }
+        });
+        document.getElementById('totalFee').textContent = formatNumber(totalFee);
+    });
+</script>
+</body>
+</html>

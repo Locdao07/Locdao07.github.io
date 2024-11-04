@@ -1,0 +1,51 @@
+	<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+</head>
+<body>
+<!-- Include _menu.html -->
+<div th:replace="~{_menu}"></div>
+
+<h1>Login</h1>
+
+<!-- /login?error=true -->
+<div th:if="${param.error}" style="color:red;margin:10px 0px;">
+    Login Failed!!!<br />
+    Reason:
+    <span th:if="${session['SPRING_SECURITY_LAST_EXCEPTION'] != null}"
+          th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}">Invalid credentials</span>
+</div>
+<div th:if="${param.passwordChanged}">
+        <p style="color: green;">Password changed successfully. Please log in with your new password.</p>
+    </div>
+<h3>Enter username and password:</h3>
+<form th:action="@{/login}" method="post">
+    <table>
+        <tr>
+            <td>User:</td>
+            <td><input type="text" name="username" /></td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td><input type="password" name="password" /></td>
+        </tr>
+        <tr>
+            <td>Remember Me?</td>
+            <td><input type="checkbox" name="remember-me" /></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" value="Login" /></td>
+        </tr>
+    </table>
+</form>
+
+<br>
+Username/password examples:
+<ul>
+    <li>dbuser1/123</li>
+    <li>dbadmin1/123</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <a class="navbar-brand" href="/" th:href="@{/userInfo/announcements}">TRANG CHỦ</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/userInfo/subject-list}">Môn Học</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/userInfo/registered-subjects}">Lớp đã đăng ký</a>
+            </li>
+               <li class="nav-item">
+                <a class="nav-link" th:href="@{/userInfo/messages}">Tin nhắn</a>
+            </li>
+
+           <!--  <li class="nav-item">
+                <a class="nav-link" th:href="@{/userInfo/change-password}">Đổi Mật Khẩu</a>
+            </li> -->
+        </ul>
+        <span class="navbar-text text-light mr-3">
+            <span th:text="'Hello, ' + ${#authentication.name}"></span>
+        </span>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+        <li class="nav-item">
+                <a class="btn btn-danger" th:href="@{/userInfo/change-password}">Đổi Mật Khẩu</a>
+            </li>
+    </div>
+</nav>

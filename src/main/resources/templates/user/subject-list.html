@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Môn Học</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="~{user/_head}"></div>
+<div class="container">
+    <h1>Danh Sách</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th>Credits</th>
+                <th>Fee</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="subject : ${subjects}">
+                <td th:text="${subject.id}"></td>
+                <td th:text="${subject.subjectName}"></td>
+                <td th:text="${subject.subjectCode}"></td>
+                <td th:text="${subject.description}"></td>
+                <td th:text="${subject.credits}"></td>
+                <td th:text="${subject.formattedFee}"></td>
+                <td>
+                    <a th:href="@{/userInfo/registrations/{subjectId}(subjectId=${subject.id})}" class="btn btn-sm btn-warning">View</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

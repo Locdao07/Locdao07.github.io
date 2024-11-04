@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>USER</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        .announcement {
+            background-color: white;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .announcement-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .announcement-date {
+            font-size: 14px;
+            color: #888;
+        }
+        .announcement-content {
+            margin-top: 10px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{user/_head}"></div>
+
+<div class="container">
+    <h1>THÔNG BÁO</h1>
+    <div th:each="announcement : ${announcements}">
+        <div class="announcement">
+            <h2 class="announcement-title">
+                <a th:href="@{/userInfo/announcements/{id}(id=${announcement.id})}" th:text="${announcement.title}"></a>
+            </h2>
+            <p class="announcement-date" th:text="${#dates.format(announcement.date, 'yyyy-MM-dd HH:mm')}"></p>
+            <p class="announcement-content" th:text="${announcement.getFirstLineOfContent()}"></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

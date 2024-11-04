@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Subject</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="~{head}"></div>
+    <div class="container mt-5">
+        <h1>Edit Subject</h1>
+        <form th:action="@{/subjects/edit/{id}(id=${subject.id})}" th:object="${subject}" method="post">
+            <div class="form-group">
+                <label for="subjectName">Name:</label>
+                <input type="text" id="subjectName" th:field="*{subjectName}" class="form-control" />
+                <div th:if="${#fields.hasErrors('subjectName')}" th:errors="*{subjectName}" class="text-danger"></div>
+            </div>
+            <div class="form-group">
+                <label for="subjectCode">Code:</label>
+                <input type="text" id="subjectCode" th:field="*{subjectCode}" class="form-control" />
+                <div th:if="${#fields.hasErrors('subjectCode')}" th:errors="*{subjectCode}" class="text-danger"></div>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" th:field="*{description}" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="credits">Credits:</label>
+                <input type="number" id="credits" th:field="*{credits}" class="form-control" />
+                <div th:if="${#fields.hasErrors('credits')}" th:errors="*{credits}" class="text-danger"></div>
+            </div>
+             <div class="form-group">
+                <label for="fee">Fee:</label>
+                <input type="number" id="fee" th:field="*{fee}" class="form-control" step="0.01" />
+                <div th:if="${#fields.hasErrors('fee')}" th:errors="*{fee}" class="text-danger"></div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a href="/subjects" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

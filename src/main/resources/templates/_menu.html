@@ -1,0 +1,22 @@
+<!-- src/main/resources/templates/_menu.html -->
+<div xmlns:th="http://www.thymeleaf.org"
+     style="border: 1px solid #ccc; padding: 5px; margin-bottom: 20px;">
+
+    <!-- <a th:href="@{/1}">Home</a> | &nbsp; -->
+    
+<a th:href="@{/1}">Home</a> | &nbsp;
+    <span th:if="${#authorization.expression('isAuthenticated()')}">
+        
+        <a th:href="@{/userInfo/announcements}">User Info</a>
+        | &nbsp;
+        <a th:href="@{/admin}">Admin</a>
+        | &nbsp;
+        <a th:href="@{/logout}">Logout</a>
+    </span>
+
+    <span th:if="${#authorization.expression('!isAuthenticated()')}">
+        | &nbsp;
+        <a th:href="@{/login}">Login</a>
+    </span>
+
+</div>

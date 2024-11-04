@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrations</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>Registrations</h1>
+    <div th:if="${registrations.size() == 0}">
+        <p>No registrations available.</p>
+    </div>
+    <div th:if="${registrations.size() > 0}">
+        <ul>
+            <li th:each="registration : ${registrations}">
+                <p th:text="'Subject ID: ' + ${registration.subjectId}"></p>
+                <p th:text="'Student ID: ' + ${registration.studentId}"></p>
+                <p th:text="'Registration Date: ' + ${registration.registrationDate}"></p>
+                <p th:text="'Approved: ' + ${registration.approved}"></p>
+            </li>
+        </ul>
+    </div>
+    <a href="/student1/registrations/new" class="btn btn-primary">New Registration</a>
+</div>
+</body>
+</html>

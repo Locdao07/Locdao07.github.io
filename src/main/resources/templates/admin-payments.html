@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thanh toán học phí</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        h1 {
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        .form-inline {
+            margin-bottom: 20px;
+        }
+        .total-fee {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 20px;
+            text-align: right;
+        }
+        .pay-btn {
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+        }
+        .pay-btn:hover {
+            background-color: #218838;
+        }
+        .alert-info {
+            margin-top: 20px;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        /* Custom switch styling */
+        .custom-control {
+            position: relative;
+            display: block;
+            min-height: 1.5rem;
+            padding-left: 2.25rem;
+        }
+        .custom-control-label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin-bottom: 0;
+            vertical-align: middle;
+        }
+        .custom-control-input {
+            position: absolute;
+            left: -2.25rem;
+            z-index: -1;
+            width: 1rem;
+            height: 1.25rem;
+            opacity: 0;
+        }
+        .custom-switch .custom-control-label::before {
+            left: -2.25rem;
+            width: 2rem;
+            height: 1rem;
+            pointer-events: all;
+            border-radius: .5rem;
+            background-color: #dee2e6;
+            transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+        .custom-switch .custom-control-label::after {
+            position: absolute;
+            top: .25rem;
+            left: -2.25rem;
+            width: 1rem;
+            height: 1rem;
+            background-color: #fff;
+            border-radius: .5rem;
+            transition: transform .15s ease-in-out;
+            content: "";
+        }
+        .custom-switch .custom-control-input:checked~.custom-control-label::before {
+            background-color: #007bff;
+        }
+        .custom-switch .custom-control-input:checked~.custom-control-label::after {
+            transform: translateX(1rem);
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{head}"></div>
+<div class="container">
+    <h1 class="text-center">THANH TOÁN HỌC PHÍ</h1>
+    
+    <!-- Success message -->
+    <div th:if="${success != null}" class="alert alert-success">
+        <p th:text="${success}"></p>
+    </div>
+    
+    <!-- Error message -->
+    <div th:if="${error != null}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <form class="form-inline justify-content-center" th:action="@{/admin/payments/search}" method="get">
+        <div class="form-group mx-sm-3 mb-2">
+            <label for="email" class="sr-only">Nhập Email:</label>
+            <input type="text" class="form-control" id="email" name="email" placeholder="Nhập Email" required autofocus>
+        </div>
+        <button type="submit" class="btn btn-primary mb-2">Tìm kiếm</button>
+    </form>
+
+    <div th:if="${student != null}">
+        <h2 class="text-center">Xin chào: <span th:text="${student.firstName} + ' ' + ${student.lastName}"></span></h2>
+        
+        <!-- Payment message -->
+        <div th:if="${hasPaid}" class="alert alert-info text-center">
+            <p th:text="${message}"></p>
+        </div>
+        
+        <!-- Payment form -->
+        <div th:if="${!hasPaid}">
+            <form th:action="@{/admin/payments/pay}" method="post">
+                <input type="hidden" name="studentId" th:value="${student.id}">
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="selectAll" onclick="toggleSelectAll(this)">
+                    <label class="custom-control-label" for="selectAll">Chọn</label>
+                </div>
+                <table class="table table-hover table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên môn học</th>
+                            <th>Ngày đăng ký</th>
+                            <th>Học phí</th>
+                            <th>Chọn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="registration : ${registrations}">
+                            <td th:text="${registration.id}"></td>
+                            <td th:text="${registration.subjectName}"></td>
+                            <td th:text="${#dates.format(registration.registrationDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td th:text="${registration.formattedFee}"></td>
+                            <td>
+                                <input type="checkbox" name="registrationIds" th:value="${registration.id}" th:data-fee="${registration.fee}" class="registration-checkbox">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="total-fee">
+                    Tổng Tiền: <span id="totalFee">0 ₫</span>
+                </div>
+                <button class="btn btn-success pay-btn" type="submit">Thanh Toán</button>
+            </form>
+        </div>
+    </div>
+    <!--  <a href="/admin/payments/paid-students" class="btn btn-primary">Danh sách sinh viên đã thanh toán</a> -->
+    
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var checkboxes = document.querySelectorAll('.registration-checkbox');
+        var totalFeeElement = document.getElementById('totalFee');
+
+        function calculateTotalFee() {
+            var totalFee = 0;
+            checkboxes.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    totalFee += parseFloat(checkbox.getAttribute('data-fee'));
+                }
+            });
+            totalFeeElement.textContent = totalFee.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        }
+
+        function toggleSelectAll(selectAllCheckbox) {
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            calculateTotalFee();
+        }
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', calculateTotalFee);
+        });
+
+        document.getElementById('selectAll').addEventListener('change', function() {
+            toggleSelectAll(this);
+        });
+    });
+</script>
+</body>
+</html>

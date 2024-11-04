@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payment Success</title>
+</head>
+<body>
+    <h1>Payment Successful</h1>
+    <p>Name: <span th:text="${payment.student.firstName + ' ' + payment.student.lastName}"></span></p>
+    <p>Payment Date: <span th:text="${payment.paymentDate}"></span></p>
+    <p>Total Amount: <span th:text="${payment.totalAmount}"></span></p>
+</body>
+</html>

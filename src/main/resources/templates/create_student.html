@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Create Student</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{head}"></div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card">
+                <h2 class="text-center">Create Student</h2>
+                <div class="card-body">
+                    <form th:action="@{/students}" th:object="${student}" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" th:field="*{firstName}" placeholder="Enter first name" autofocus>
+                            <div th:if="${#fields.hasErrors('firstName')}" class="alert alert-danger mt-2" role="alert">
+                                <p th:each="err : ${#fields.errors('firstName')}" th:text="${err}"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" th:field="*{lastName}" placeholder="Enter last name">
+                            <div th:if="${#fields.hasErrors('lastName')}" class="alert alert-danger mt-2" role="alert">
+                                <p th:each="err : ${#fields.errors('lastName')}" th:text="${err}"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Enter email">
+                            <div th:if="${#fields.hasErrors('email')}" class="alert alert-danger mt-2" role="alert">
+                                <p th:each="err : ${#fields.errors('email')}" th:text="${err}"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="imageFile">Upload Image</label>
+                            <input type="file" class="form-control-file" id="imageFile" name="imageFile">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                        <a th:href="@{/students}" class="btn btn-secondary btn-block mt-2">Back to Home</a>
+                    </form>    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJ6JHty5KVphtPhzWj9WO1clHTMGaZpp1AMJc5jLGa/tQODpZEM5" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Function to save form data to sessionStorage
+        function saveFormData() {
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+            };
+            sessionStorage.setItem('addStudentFormData', JSON.stringify(formData));
+        }
+
+        // Function to load form data from sessionStorage
+        function loadFormData() {
+            const savedData = sessionStorage.getItem('addStudentFormData');
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                document.getElementById('firstName').value = formData.firstName || '';
+                document.getElementById('lastName').value = formData.lastName || '';
+                document.getElementById('email').value = formData.email || '';
+            }
+        }
+
+        // Load form data when the page is loaded
+        loadFormData();
+
+        // Save form data when leaving the page
+        window.addEventListener('beforeunload', saveFormData);
+    });
+</script>
+</body>
+</html>
